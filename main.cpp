@@ -1,10 +1,9 @@
 /*
-   This program will create a decision tree for an animal
-   guessing game.
-
-   
-   Pseudocode has been added as a hint to help with developing this
-   program
+ File: main.cpp
+ Description: This program will create a decision tree for an animal guessing game.
+ Created: 5/15/20
+ Author: Tim Chester
+ email: chestert@student.vvc.edu
 */
 
 #include <iostream>
@@ -12,38 +11,61 @@
 #include <string>
 #include "binary_tree.h"
 
+void write(ostream& out, const Binary_tree& tree, int level);
+std::string leading_trim(const std::string& str);
+
 Binary_tree read(istream& in)
 {
-//   Note the stream is called in
-//
-//    declare data as string
-//    declare level as integer
-//    get level from stream
-//    get line from stream and assign it to data
-//    if level == -1
-//        return Binary_tree();
-//
-//    declare left as a Binary_tree and assign it read(in) 
-//      Note:  it is a recursive call
-//
-//    declare right as a Binary_tree and assign it to read(in)
-//      Note:  it is a recursive call
-//
-//    return Binary_tree(data, left, right)
+    std::string data;
+
+    int level;
+
+    in >> level;
+
+    std::getline(in, data);
+    data = leading_trim(data); //trims leading white space in front of the data
+
+    if (level == -1)
+    {
+        return Binary_tree();
+    }
+
+    Binary_tree left, right;
+    left = read(in);
+
+    right = read(in);
+
+    return Binary_tree(data, left, right);
 }
 
 void write(ostream& out, const Binary_tree& tree, int level)
 {
-//    if tree.empty()
-//        output -1 + \n to out
-//        return 
-//    output level + ' ' + tree.data() + \n to out
-//    call write (out, tree.left(), level + 1)
-//    call write (out, tree.right(), level + 1)
+    if (tree.empty())
+    {
+        out << -1 << "\n";
+        return;
+    }
+
+    out << level << ' ' << tree.data() << "\n";
+
+    write(out, tree.left(), level + 1);
+
+    write(out, tree.right(), level + 1);
 }
 
+/**
+    Trims leading blank spaces
+    @param str string to be trimmed
+*/
+std::string leading_trim(const std::string& str)
+{
+    size_t start = str.find_first_not_of(" ");
+    return (start == std::string::npos) ? "" : str.substr(start);
+}
+
+
 /*
- * helper function that will help with definite or indefinite 
+ * helper function that will help with definite or indefinite
  * articles in a string
  */
 std::string article(const std::string& entry)
@@ -51,81 +73,105 @@ std::string article(const std::string& entry)
     std::string article = "a";
     if (std::string("aeiou").find(entry[0]) != std::string::npos)
     {
-        article =  "an";
+        article = "an";
     }
     return article;
 }
 
-int main(int argc,char **argv)
+int main(int argc, char** argv)
 {
-    Binary_tree root;  
-    // Strategy
-    //  get the filename from the command line arguments
-    //  open the file stream
-    //  initialize the root Binary_tree variable with data from the 
-    //  file stream to initialize the decision tree root by calling
-    //  the read function
-    //
+    Binary_tree root; //contents of the file are written to root. The Beginning of the tree.
 
-    // declare a Binary_tree question_tree and set it to root
-    // while not done
-    //    declare a string called response
-    //    declare a Binary_tree called left and set it to 
-    //       question_tree.left()
-    //
-    //    declare a Binary_tree called right and set it to 
-    //       question_tree.right()
-    //
-    //    if left.empty() and right.empty()
-            // Add code here that will carry on something like the 
-            // following dialog:
-            //
-            //  Is it a mammal? Y  
-            //  Does it have stripes? N  
-            //  Is it a pig? N  
+    //takes an argument from the command line as the filename
+    if (argc > 1)
+    {
+        std::cout << "The first argument is: " << std::endl;
+        std::cout << argv[1] << std::endl;
+    }
 
-            // get the response from the user and 
-            // if it is correct,
-            //     print  "I guessed it!"
-            // else
-            //    print "I give up. What is it?"
-            //    if user enters A hamster  
-            //    then
-            //        print "Please give me a question that is true 
-            //                  for a hamster and false for a pig."
-            //        get the response from the user
-            //             example user response: Is it small and cuddly?  
-            //
-            //        Insert a node into question_tree so that this 
-            //        question is used in future dialogs:
-            //
-            // One strategy to consider is to implement a set method 
-            //   in the Binary_tree called root
-            //   the set method will set the data and the left and right 
-            //   subtrees for the given root
-            //
-            //  Future dialog:
-            //     print "May I try again? "
-            //     get response
-            //     if response is yes
-            //         done = true
-            //     else
-            //         question_tree = root
-      //  else
-      //      do
-      //        print Is it a question_tree.data()  (y/n): 
-      //        get response
-      //      while (response != y and response != n)
+    fstream qfile(argv[1]);
 
-      //      if response is y
-      //         question_tree = left;
-      //      else
-      //         question_tree = right;
+    //root is initialized by the file here
+    if (qfile.is_open())
+    {
+        root = read(qfile);
+        qfile.close();
+    }
 
-    // When done, write the decision tree to the data file by calling
-    // the write function so that the new
-    // question and answer is added to the data file
+    Binary_tree question_tree = root; //question_tree will be the current working Binary_tree
+
+    cout << "This is an animal guessing game. Think of an animal and I will try to guess it." << std::endl;
+
+    while (!question_tree.empty())
+    {
+        std::string response; //generic response to hold user input
+
+        //question_tree will be set to left if response is yes, and right if response is no
+        Binary_tree left = question_tree.left(); 
+        Binary_tree right = question_tree.right();
+
+        //out puts the question or answer to the user
+        if (question_tree.left().empty() && question_tree.right().empty()) //checks if the current data is an answer rather than a question
+        {
+            cout << "It is " << article(question_tree.data()) << " " << question_tree.data() << " ";
+        }
+        else
+        {
+            cout << question_tree.data() << " ";
+        }
+        cin >> response;
+
+        if (question_tree.left().empty() && question_tree.right().empty()) //if the data is an answer
+        {
+            if (response == "y" || response == "Y")
+            {
+                cout << "I guessed it!" << std::endl << "Would you like to play again? " ;
+                cin >> response;
+                if (response == "y" || response == "Y")
+                {
+                    question_tree = root;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            else //the program will add new questions to get better for next time
+            {
+                cout << "I give up. What is it? ";
+                cin >> response;
+
+                cout << "Please give me a question that is true for " << article(response) << " " << response << " and false for " << article(question_tree.data()) << " " << question_tree.data() << std::endl;
+                string question;
+                cin.ignore();
+                getline(cin, question);
+
+                question_tree.insert(question, response, question_tree.data()); //inserts the new question in the place of the original answer
+
+                cout << "Okay" << std::endl << "May I try again? ";
+                cin >> response;
+                if (response == "y" || response == "Y")
+                {
+                    question_tree = root;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        else if (response == "y" || response == "Y") //the else if and else statements iterate through the tree depending on the users input. y = left, n = right.
+        {
+            question_tree = left; 
+        }
+        else
+        {
+
+            question_tree = right;
+        }
+
+    //writes the new tree to the file
+    qfile.open(argv[1]);
+    write(qfile, root, 0);
+    qfile.close();
 }
-
-
-

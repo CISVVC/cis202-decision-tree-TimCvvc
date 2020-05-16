@@ -1,8 +1,16 @@
-//SOLUTION
+/*
+ File: binary_tree.cpp
+ Description: implementation for the Binary_tree class
+ Created: 5/15/20
+ Author: Tim Chester
+ email: chestert@student.vvc.edu
+*/
+
 #include <algorithm>
 #include "binary_tree.h"
 
 using namespace std;
+#include <iostream>
 
 Binary_tree::Binary_tree()
 {
@@ -68,3 +76,17 @@ Binary_tree Binary_tree::right() const
 
 
 
+void Binary_tree::insert(string question, string new_answer, string original_answer)
+{
+    Binary_tree left, right;
+    
+    root->left = new Node;
+    root->right = new Node;
+
+    left.root = root->left;
+    right.root = root->right;
+
+    right.root->data = root->data;
+    root->data = question;
+    left.root->data = new_answer;
+}

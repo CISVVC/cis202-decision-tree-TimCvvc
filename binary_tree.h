@@ -1,4 +1,10 @@
-//SOLUTION
+/*
+ File: binary_tree.h
+ Description: Header file for the Binary_tree class and a Node class. interface for a binary tree of strings
+ Created: 5/15/20
+ Author: Tim Chester
+ email: chestert@student.vvc.edu
+*/
 #ifndef BINARY_TREE_H
 #define BINARY_TREE_H
 
@@ -71,6 +77,14 @@ public:
     */
     Binary_tree right() const;
 
+    /**
+        Inserts a new question where the answer was
+        @param question the question to be added
+        @param new_answer the new answer that will be added to the left node
+        @param original_answer the original answer that will be added to the right node
+    */
+    void insert(string question, string new_answer, string original_answer);
+
 private:
     /**
        Returns the height of the subtree whose root is the given node.
@@ -83,6 +97,3 @@ private:
 };
 
 #endif
-
-
-
