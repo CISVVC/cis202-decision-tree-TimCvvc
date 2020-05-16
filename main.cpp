@@ -107,7 +107,7 @@ int main(int argc, char** argv)
         std::string response; //generic response to hold user input
 
         //question_tree will be set to left if response is yes, and right if response is no
-        Binary_tree left = question_tree.left(); 
+        Binary_tree left = question_tree.left();
         Binary_tree right = question_tree.right();
 
         //out puts the question or answer to the user
@@ -125,7 +125,7 @@ int main(int argc, char** argv)
         {
             if (response == "y" || response == "Y")
             {
-                cout << "I guessed it!" << std::endl << "Would you like to play again? " ;
+                cout << "I guessed it!" << std::endl << "Would you like to play again? ";
                 cin >> response;
                 if (response == "y" || response == "Y")
                 {
@@ -162,13 +162,14 @@ int main(int argc, char** argv)
         }
         else if (response == "y" || response == "Y") //the else if and else statements iterate through the tree depending on the users input. y = left, n = right.
         {
-            question_tree = left; 
+            question_tree = left;
         }
         else
         {
 
             question_tree = right;
         }
+    }
 
     //writes the new tree to the file
     qfile.open(argv[1]);
